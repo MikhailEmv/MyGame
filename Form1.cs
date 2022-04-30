@@ -172,7 +172,7 @@ namespace _2DWar
 
         private void mainPlayer_Click(object sender, EventArgs e)
         {
-
+            // made smth new
         }
 
         private void MoveBulletsTimer_Tick(object sender, EventArgs e)
