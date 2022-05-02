@@ -56,9 +56,9 @@ namespace _2DWar
             // 
             this.mainPlayer.BackColor = System.Drawing.Color.Transparent;
             this.mainPlayer.Image = global::_2DWar.Properties.Resources.cowboy_idble;
-            this.mainPlayer.Location = new System.Drawing.Point(640, 343);
+            this.mainPlayer.Location = new System.Drawing.Point(40, 541);
             this.mainPlayer.Name = "mainPlayer";
-            this.mainPlayer.Size = new System.Drawing.Size(127, 124);
+            this.mainPlayer.Size = new System.Drawing.Size(122, 120);
             this.mainPlayer.TabIndex = 0;
             this.mainPlayer.TabStop = false;
             this.mainPlayer.Click += new System.EventHandler(this.mainPlayer_Click);
@@ -101,7 +101,7 @@ namespace _2DWar
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Showcard Gothic", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(209, 28);
+            this.label1.Location = new System.Drawing.Point(742, 372);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(305, 98);
             this.label1.TabIndex = 1;
@@ -114,7 +114,7 @@ namespace _2DWar
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Showcard Gothic", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(1034, 28);
+            this.label2.Location = new System.Drawing.Point(1438, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(150, 47);
             this.label2.TabIndex = 2;
@@ -126,7 +126,7 @@ namespace _2DWar
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Showcard Gothic", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(1034, 79);
+            this.label3.Location = new System.Drawing.Point(1438, 60);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(139, 47);
             this.label3.TabIndex = 3;
@@ -138,7 +138,7 @@ namespace _2DWar
             this.labelScore.BackColor = System.Drawing.Color.Transparent;
             this.labelScore.Font = new System.Drawing.Font("Showcard Gothic", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelScore.ForeColor = System.Drawing.Color.White;
-            this.labelScore.Location = new System.Drawing.Point(1190, 28);
+            this.labelScore.Location = new System.Drawing.Point(1594, 9);
             this.labelScore.Name = "labelScore";
             this.labelScore.Size = new System.Drawing.Size(64, 47);
             this.labelScore.TabIndex = 4;
@@ -150,7 +150,7 @@ namespace _2DWar
             this.labelLevel.BackColor = System.Drawing.Color.Transparent;
             this.labelLevel.Font = new System.Drawing.Font("Showcard Gothic", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelLevel.ForeColor = System.Drawing.Color.White;
-            this.labelLevel.Location = new System.Drawing.Point(1190, 79);
+            this.labelLevel.Location = new System.Drawing.Point(1594, 60);
             this.labelLevel.Name = "labelLevel";
             this.labelLevel.Size = new System.Drawing.Size(58, 47);
             this.labelLevel.TabIndex = 5;
@@ -162,7 +162,7 @@ namespace _2DWar
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::_2DWar.Properties.Resources.background_jpeg;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1262, 673);
+            this.ClientSize = new System.Drawing.Size(1656, 673);
             this.Controls.Add(this.labelLevel);
             this.Controls.Add(this.labelScore);
             this.Controls.Add(this.label3);

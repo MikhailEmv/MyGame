@@ -33,17 +33,17 @@ namespace _2DWar
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            backgroundSpeed = 1;
+            backgroundSpeed = 3;
             cloud = new PictureBox[20];
             rnd = new Random();
-            playerSpeed = 3;
+            playerSpeed = 4;
 
             bullets = new PictureBox[1];
             bulletsSpeed = 80;
 
             enemies = new PictureBox[4];
             sizeEnemy = rnd.Next(60, 90);
-            enemySpeed = 3;
+            enemySpeed = 4;
 
             Score = 0;
             Level = 1;
@@ -124,17 +124,17 @@ namespace _2DWar
 
         private void RightMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Left < 1150) mainPlayer.Left += playerSpeed;
+            if (mainPlayer.Left < 950) mainPlayer.Left += playerSpeed;
         }
 
         private void UpMoveTimer_Tick(object sender, EventArgs e)
         {
-            mainPlayer.Top -= playerSpeed;
+            if (mainPlayer.Top > 480) mainPlayer.Top -= playerSpeed;
         }
 
         private void DownMoveTimer_Tick(object sender, EventArgs e)
         {
-            mainPlayer.Top += playerSpeed;
+            if (mainPlayer.Top < 700) mainPlayer.Top += playerSpeed;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -161,6 +161,11 @@ namespace _2DWar
             }
         }
 
+        private void mainPlayer_Click(object sender, EventArgs e)
+        {
+            // made smth new
+        }
+
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             mainPlayer.Image = Properties.Resources.cowboy_idble;
@@ -170,17 +175,10 @@ namespace _2DWar
             DownMoveTimer.Stop();
         }
 
-        private void mainPlayer_Click(object sender, EventArgs e)
-        {
-            // made smth new
-        }
-
         private void MoveBulletsTimer_Tick(object sender, EventArgs e)
         {
             for (int i = 0; i < bullets.Length; i++)
-            {
                 bullets[i].Left += bulletsSpeed;
-            }
         }
 
         private void MoveEnemiesTimer_Tick(object sender, EventArgs e)
@@ -192,16 +190,17 @@ namespace _2DWar
         {
             for (var i = 0; i < enemies.Length; i++)
             {
-                enemies[i].Left -= speed + (int)(Math.Sin(enemies[i].Left * Math.PI / 180) +
-                    Math.Cos(enemies[i].Left * Math.PI / 180));
+                enemies[i].Left -= speed + 
+                    (int)(Math.Sin(enemies[i].Left * Math.PI / 180) +
+                          Math.Cos(enemies[i].Left * Math.PI / 180));
 
                 Intersect();
 
-                if (enemies[i].Left < this.Left)
+                if (enemies[i].Left < this.Left && enemies[i].Top > 600)
                 {
-                    int sizeEnemy = rnd.Next(60, 90);
+                    int sizeEnemy = rnd.Next(60, 70);
                     enemies[i].Size = new Size(sizeEnemy, sizeEnemy);
-                    enemies[i].Location = new Point((i + 1) * rnd.Next(150, 250) + 1080, rnd.Next(450, 700));
+                    enemies[i].Location = new Point((i + 1) * rnd.Next(150, 250) + 1080, rnd.Next(500, 700));
                 }
             }
         }
@@ -241,7 +240,7 @@ namespace _2DWar
         private void GameOver(string str)
         {
             label1.Text = str;
-            label1.Location = new Point(500, 50);
+            label1.Location = new Point(584, 380);
             label1.Visible = true;
 
             GameSong.controls.stop();

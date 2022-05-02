@@ -118,5 +118,15 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\2DWar.Model.Tests\2DWar.Model.Tests.csproj">
+      <Project>{7799fdf1-8aea-4ced-8765-e13a0a1900c0}</Project>
+      <Name>2DWar.Model.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\2DWar.Model\2DWar.Model.csproj">
+      <Project>{eb6a6d51-2513-4f81-b98e-e327309423d4}</Project>
+      <Name>2DWar.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
