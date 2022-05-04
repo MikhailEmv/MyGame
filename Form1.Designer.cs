@@ -198,4 +198,3 @@ namespace _2DWar
         private System.Windows.Forms.Label labelLevel;
     }
 }
-

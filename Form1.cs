@@ -1,19 +1,20 @@
-﻿using System;
+﻿using _2DWar.Model;
+using System;
 using System.Drawing;
+using System.Windows;
 using System.Windows.Forms;
 using WMPLib;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
 
 namespace _2DWar
 {
     public partial class Form1 : Form
     {
-        int backgroundSpeed;
         PictureBox[] cloud;
         Random rnd;
-        int playerSpeed;
 
         PictureBox[] bullets;
-        int bulletsSpeed;
 
         PictureBox[] enemies;
         int sizeEnemy;
@@ -26,29 +27,41 @@ namespace _2DWar
         WindowsMediaPlayer GameSong;
         WindowsMediaPlayer Rip;
 
+        PlayerModel player;
+        BulletModel bullet;
+        CloudsModel clouds;
+        EnemyModel enemy;
+
         public Form1()
         {
+            player = new PlayerModel(position: new Vector(0, 0));
+            bullet = new BulletModel(position: new Vector(0, 0));
+            clouds = new CloudsModel(position: new Vector(0, 0), limitRightSide: 1280);
+            enemy = new EnemyModel(position: new Vector(0, 0));
             InitializeComponent();
+        }
+
+        private void UpdatePlayerPosition()
+        {
+            Vector playerPosition = player.Position;
+            mainPlayer.Top = (int)playerPosition.Y;
+            mainPlayer.Left = (int)playerPosition.X;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            backgroundSpeed = 3;
             cloud = new PictureBox[20];
             rnd = new Random();
-            playerSpeed = 4;
 
             bullets = new PictureBox[1];
-            bulletsSpeed = 80;
 
             enemies = new PictureBox[4];
             sizeEnemy = rnd.Next(60, 90);
-            enemySpeed = 4;
+
+            Image easyEnemies = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\apap.gif");
 
             Score = 0;
             Level = 1;
-
-            Image easyEnemies = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\apap.gif");
 
             for (var i = 0; i < enemies.Length; i++)
             {
@@ -92,49 +105,66 @@ namespace _2DWar
                 cloud[i] = new PictureBox();
                 cloud[i].BorderStyle = BorderStyle.None;
                 cloud[i].Location = new Point(rnd.Next(-1000, 1280), rnd.Next(140, 320));
+                
                 if (i % 2 > 0)
                 {
                     cloud[i].Size = new Size(rnd.Next(100, 255), rnd.Next(30, 70));
                     cloud[i].BackColor = Color.FromArgb(rnd.Next(50, 125), 255, 200, 200);
                 }
+
                 else
                 {
                     cloud[i].Size = new Size(150, 25);
                     cloud[i].BackColor = Color.FromArgb(rnd.Next(50, 125), 255, 205, 205);
                 }
+
                 this.Controls.Add(cloud[i]);
             }
 
             GameSong.controls.play();
+            UpdatePlayerPosition();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             for (var i = 0; i < cloud.Length; i++)
-            {
-                cloud[i].Left += backgroundSpeed;
-                if (cloud[i].Left >= 1280) cloud[i].Left = cloud[i].Height;
-            }
+                clouds.Move(Directions.Right);
         }
 
         private void LeftMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Left > 10) mainPlayer.Left -= playerSpeed;
+            if (mainPlayer.Left > 10)
+            {
+                player.Move(Directions.Left);
+                UpdatePlayerPosition();
+            }
         }
 
         private void RightMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Left < 950) mainPlayer.Left += playerSpeed;
+            if (mainPlayer.Left < 950)
+            {
+                player.Move(Directions.Right);
+                UpdatePlayerPosition();
+            }
         }
 
         private void UpMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Top > 480) mainPlayer.Top -= playerSpeed;
+            if (mainPlayer.Top > 480)
+            {
+                player.Move(Directions.Up);
+                UpdatePlayerPosition();
+            }
         }
 
         private void DownMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Top < 700) mainPlayer.Top += playerSpeed;
+            if (mainPlayer.Top < 700)
+            {
+                player.Move(Directions.Down);
+                UpdatePlayerPosition();
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -178,7 +208,7 @@ namespace _2DWar
         private void MoveBulletsTimer_Tick(object sender, EventArgs e)
         {
             for (int i = 0; i < bullets.Length; i++)
-                bullets[i].Left += bulletsSpeed;
+                bullet.Move(Directions.Right);
         }
 
         private void MoveEnemiesTimer_Tick(object sender, EventArgs e)
