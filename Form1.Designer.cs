@@ -1,5 +1,4 @@
-﻿
-namespace _2DWar
+﻿namespace _2DWar
 {
     partial class Form1
     {
@@ -56,7 +55,7 @@ namespace _2DWar
             // 
             this.mainPlayer.BackColor = System.Drawing.Color.Transparent;
             this.mainPlayer.Image = global::_2DWar.Properties.Resources.cowboy_idble;
-            this.mainPlayer.Location = new System.Drawing.Point(40, 541);
+            this.mainPlayer.Location = new System.Drawing.Point(12, 541);
             this.mainPlayer.Name = "mainPlayer";
             this.mainPlayer.Size = new System.Drawing.Size(122, 120);
             this.mainPlayer.TabIndex = 0;
@@ -162,7 +161,7 @@ namespace _2DWar
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::_2DWar.Properties.Resources.background_jpeg;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1656, 673);
+            this.ClientSize = new System.Drawing.Size(1262, 673);
             this.Controls.Add(this.labelLevel);
             this.Controls.Add(this.labelScore);
             this.Controls.Add(this.label3);

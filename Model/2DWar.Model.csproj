@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BulletModel.cs" />
-    <Compile Include="CloudsModel.cs" />
+    <Compile Include="CloudModel.cs" />
     <Compile Include="Directions.cs" />
     <Compile Include="EnemyModel.cs" />
     <Compile Include="PlayerModel.cs" />

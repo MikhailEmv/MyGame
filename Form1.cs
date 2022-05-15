@@ -1,5 +1,7 @@
 ﻿using _2DWar.Model;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
@@ -11,13 +13,17 @@ namespace _2DWar
 {
     public partial class Form1 : Form
     {
-        PictureBox[] cloud;
         Random rnd;
 
-        PictureBox[] bullets;
+        CloudModel[] cloudsModel;
+        PictureBox[] clouds;
 
-        PictureBox[] enemies;
-        int sizeEnemy;
+        Dictionary<string, BulletModel> bulletsModel;
+        Dictionary<string, PictureBox> bullets;
+
+        Dictionary<string, EnemyModel> enemiesModel;
+        Dictionary<string, PictureBox> enemies;
+
         int enemySpeed;
 
         int Score;
@@ -27,55 +33,31 @@ namespace _2DWar
         WindowsMediaPlayer GameSong;
         WindowsMediaPlayer Rip;
 
+        Image easyEnemies = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\apap.gif");
+
         PlayerModel player;
-        BulletModel bullet;
-        CloudsModel clouds;
-        EnemyModel enemy;
 
         public Form1()
         {
-            player = new PlayerModel(position: new Vector(0, 0));
-            bullet = new BulletModel(position: new Vector(0, 0));
-            clouds = new CloudsModel(position: new Vector(0, 0), limitRightSide: 1280);
-            enemy = new EnemyModel(position: new Vector(0, 0));
+            player = new PlayerModel(position: new Vector(0, 600));
             InitializeComponent();
-        }
-
-        private void UpdatePlayerPosition()
-        {
-            Vector playerPosition = player.Position;
-            mainPlayer.Top = (int)playerPosition.Y;
-            mainPlayer.Left = (int)playerPosition.X;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cloud = new PictureBox[20];
             rnd = new Random();
 
-            bullets = new PictureBox[1];
+            clouds = new PictureBox[20];
+            cloudsModel = new CloudModel[20];
 
-            enemies = new PictureBox[4];
-            sizeEnemy = rnd.Next(60, 90);
+            bullets = new Dictionary<string, PictureBox>();
+            bulletsModel = new Dictionary<string, BulletModel>();
 
-            Image easyEnemies = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\apap.gif");
+            enemies = new Dictionary<string, PictureBox>();
+            enemiesModel = new Dictionary<string, EnemyModel>();
 
             Score = 0;
             Level = 1;
-
-            for (var i = 0; i < enemies.Length; i++)
-            {
-                enemies[i] = new PictureBox();
-                enemies[i].Size = new Size(sizeEnemy, sizeEnemy);
-                enemies[i].SizeMode = PictureBoxSizeMode.Zoom;
-                enemies[i].BackColor = Color.Transparent;
-                enemies[i].Image = easyEnemies;
-                enemies[i].Location = new Point(
-                    (i + 1) * rnd.Next(90, 160) + 1080,
-                    rnd.Next(450, 600));
-
-                this.Controls.Add(enemies[i]);
-            }
 
             Shoot = new WindowsMediaPlayer();
             Shoot.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\shoot.mp3";
@@ -90,47 +72,159 @@ namespace _2DWar
             GameSong.settings.setMode("loop", true);
             GameSong.settings.volume = 15;
 
-            for (var i = 0; i < bullets.Length; i++)
-            {
-                bullets[i] = new PictureBox();
-                bullets[i].BorderStyle = BorderStyle.None;
-                bullets[i].Size = new Size(20, 5);
-                bullets[i].BackColor = Color.White;
+            for (var i = 0; i < 4; i++) SpawnEnemy(easyEnemies);
 
-                this.Controls.Add(bullets[i]);
+            SpawnClouds();
+
+            GameSong.controls.play();
+
+            UpdatePlayerPosition();
+        }
+
+        private void UpdatePlayerPosition()
+        {
+            Vector playerPosition = player.Position;
+            mainPlayer.Left = (int)playerPosition.X;
+            mainPlayer.Top = (int)playerPosition.Y;
+        }
+
+        private void UpdateCloud(int cloudIndex)
+        {
+            var cloudModel = cloudsModel[cloudIndex];
+            clouds[cloudIndex].Left = (int)cloudModel.Position.X;
+            clouds[cloudIndex].Top = (int)cloudModel.Position.Y;
+            clouds[cloudIndex].Size = new Size(cloudModel.Width, cloudModel.Height);
+        }
+
+        private void UpdateBullet(string id)
+        {
+            var bulletModel = bulletsModel[id];
+            bullets[id].Left = (int)bulletModel.Position.X;
+            bullets[id].Top = (int)bulletModel.Position.Y;
+        }
+
+        private void UpdateEnemyPosition(string id)
+        {
+            var enemyModel = enemiesModel[id];
+            enemies[id].Left = (int)enemyModel.Position.X;
+            enemies[id].Top = (int)enemyModel.Position.Y;
+            enemies[id].Size = new Size(enemyModel.Width, enemyModel.Height);
+        }
+
+        private void RemoveEnemy(string id)
+        {
+            this.Controls.Remove(enemies[id]);
+            enemies.Remove(id);
+            enemiesModel.Remove(id);
+        }
+
+        private void RemoveBullet(string id)
+        {
+            this.Controls.Remove(bullets[id]);
+            bullets.Remove(id);
+            bulletsModel.Remove(id);
+        }
+
+        private void SpawnEnemy(Image easyEnemies)
+        {
+            var enemySize = rnd.Next(60, 90);
+            var id = Guid.NewGuid().ToString();
+            var enemyPosition = new Vector(rnd.Next(90, 160) + 1080, rnd.Next(450, 600));
+            var enemyModel = new EnemyModel(id: id, position: enemyPosition, height: enemySize, width: enemySize);
+            var enemy = new PictureBox();
+            enemy.SizeMode = PictureBoxSizeMode.Zoom;
+            enemy.BackColor = Color.Transparent;
+            enemy.Image = easyEnemies;
+
+            enemiesModel[id] = enemyModel;
+            enemies[id] = enemy;
+
+            this.Controls.Add(enemy);
+        }
+       
+        private void SpawnBullet()
+        {
+            var id = Guid.NewGuid().ToString();
+            var bulletPosition = new Vector(mainPlayer.Location.X + 100 + 50,
+                                            mainPlayer.Location.Y + 50);
+            var bulletModel = new BulletModel(id: id, position: bulletPosition, limitRightSide: 1280);
+            var bullet = new PictureBox();
+            bullet.BorderStyle = BorderStyle.None;
+            bullet.Size = new Size(20, 5);
+            bullet.BackColor = Color.White;
+
+            bulletsModel[id] = bulletModel;
+            bullets[id] = bullet;
+
+            this.Controls.Add(bullet);
+        }
+
+        private void MoveBulletsTimer_Tick(object sender, EventArgs e)
+        {
+            var removeIds = new List<string>();
+            foreach (KeyValuePair<string, BulletModel> entry in bulletsModel)
+            {
+                if (entry.Value.IsActive)
+                {
+                    entry.Value.Move(Directions.Right);
+                    UpdateBullet(entry.Key);
+                }
+                else removeIds.Add(entry.Key);
             }
 
-            for (var i = 0; i < cloud.Length; i++)
+            for (var i = 0; i < removeIds.Count; i++) RemoveBullet(removeIds[i]);
+
+        }
+
+        private void SpawnClouds()
+        {
+            for (var i = 0; i < clouds.Length; i++)
             {
-                cloud[i] = new PictureBox();
-                cloud[i].BorderStyle = BorderStyle.None;
-                cloud[i].Location = new Point(rnd.Next(-1000, 1280), rnd.Next(140, 320));
-                
+                int height;
+                int width;
+                Color color;
+
                 if (i % 2 > 0)
                 {
-                    cloud[i].Size = new Size(rnd.Next(100, 255), rnd.Next(30, 70));
-                    cloud[i].BackColor = Color.FromArgb(rnd.Next(50, 125), 255, 200, 200);
+                    height = rnd.Next(30, 70);
+                    width = rnd.Next(100, 255);
+                    color = Color.FromArgb(rnd.Next(50, 125), 255, 200, 200);
                 }
 
                 else
                 {
-                    cloud[i].Size = new Size(150, 25);
-                    cloud[i].BackColor = Color.FromArgb(rnd.Next(50, 125), 255, 205, 205);
+                    height = 25;
+                    width = 150;
+                    color = Color.FromArgb(rnd.Next(50, 125), 255, 205, 205);
                 }
 
-                this.Controls.Add(cloud[i]);
-            }
+                var cloudPosition = new Vector(rnd.Next(-1000, 1280), rnd.Next(250, 360));
+                cloudsModel[i] = new CloudModel(position: cloudPosition, limitRightSide: 1280, 
+                    height: height, width: width);
+                clouds[i] = new PictureBox();
+                clouds[i].BorderStyle = BorderStyle.None;
+                clouds[i].BackColor = color;
+                UpdateCloud(i);
 
-            GameSong.controls.play();
-            UpdatePlayerPosition();
+                this.Controls.Add(clouds[i]);
+            }
         }
 
+        /// <summary>
+        /// Заставляет облака двигаться
+        /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
-            for (var i = 0; i < cloud.Length; i++)
-                clouds.Move(Directions.Right);
+            for (var i = 0; i < clouds.Length; i++)
+            {
+                cloudsModel[i].Move(Directions.Right);
+                UpdateCloud(i);
+            }
         }
 
+        /// <summary>
+        /// Движение игрока влево
+        /// </summary>
         private void LeftMoveTimer_Tick(object sender, EventArgs e)
         {
             if (mainPlayer.Left > 10)
@@ -140,6 +234,9 @@ namespace _2DWar
             }
         }
 
+        /// <summary>
+        /// Движение игрока вправо
+        /// </summary>
         private void RightMoveTimer_Tick(object sender, EventArgs e)
         {
             if (mainPlayer.Left < 950)
@@ -149,6 +246,9 @@ namespace _2DWar
             }
         }
 
+        /// <summary>
+        /// Движение игрока вверх
+        /// </summary>
         private void UpMoveTimer_Tick(object sender, EventArgs e)
         {
             if (mainPlayer.Top > 480)
@@ -158,6 +258,9 @@ namespace _2DWar
             }
         }
 
+        /// <summary>
+        /// Движение игрока вниз
+        /// </summary>
         private void DownMoveTimer_Tick(object sender, EventArgs e)
         {
             if (mainPlayer.Top < 700)
@@ -167,6 +270,9 @@ namespace _2DWar
             }
         }
 
+        /// <summary>
+        /// Клавиша - движение + реализация выстрела
+        /// </summary>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             mainPlayer.Image = Properties.Resources.cowboy_run;
@@ -177,25 +283,13 @@ namespace _2DWar
             if (e.KeyCode == Keys.Space)
             {
                 Shoot.controls.play();
-
-                for (int i = 0; i < bullets.Length; i++)
-                {
-                    Intersect();
-                    if (bullets[i].Left > 1280)
-                    {
-                        bullets[i].Location = new Point(
-                            mainPlayer.Location.X + 100 + 50 * i,
-                            mainPlayer.Location.Y + 50);
-                    }
-                }
+                SpawnBullet();
             }
         }
 
-        private void mainPlayer_Click(object sender, EventArgs e)
-        {
-            // made smth new
-        }
-
+        /// <summary>
+        /// Если ничего не нажимаем
+        /// </summary>
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             mainPlayer.Image = Properties.Resources.cowboy_idble;
@@ -205,65 +299,65 @@ namespace _2DWar
             DownMoveTimer.Stop();
         }
 
-        private void MoveBulletsTimer_Tick(object sender, EventArgs e)
-        {
-            for (int i = 0; i < bullets.Length; i++)
-                bullet.Move(Directions.Right);
-        }
-
         private void MoveEnemiesTimer_Tick(object sender, EventArgs e)
         {
-            MoveEnemies(enemies, enemySpeed);
-        }
-
-        private void MoveEnemies(PictureBox[] ememies, int speed)
-        {
-            for (var i = 0; i < enemies.Length; i++)
+            var removeIds = new List<string>(); 
+            foreach (KeyValuePair<string, EnemyModel> entry in enemiesModel)
             {
-                enemies[i].Left -= speed + 
-                    (int)(Math.Sin(enemies[i].Left * Math.PI / 180) +
-                          Math.Cos(enemies[i].Left * Math.PI / 180));
-
-                Intersect();
-
-                if (enemies[i].Left < this.Left && enemies[i].Top > 600)
+                if (entry.Value.IsAlive)
                 {
-                    int sizeEnemy = rnd.Next(60, 70);
-                    enemies[i].Size = new Size(sizeEnemy, sizeEnemy);
-                    enemies[i].Location = new Point((i + 1) * rnd.Next(150, 250) + 1080, rnd.Next(500, 700));
+                    entry.Value.Move(Directions.Left);
+                    UpdateEnemyPosition(entry.Key);
                 }
+                else removeIds.Add(entry.Key);
             }
+
+            for (var i = 0; i < removeIds.Count; i++)
+            {
+                RemoveEnemy(removeIds[i]);
+                SpawnEnemy(easyEnemies);
+            }
+
+            Intersect();
         }
 
         private void Intersect()
         {
-            for (var i = 0; i < enemies.Length; i++)
+            foreach (KeyValuePair<string, PictureBox> enemyEntry in enemies)
             {
-                if (bullets[0].Bounds.IntersectsWith(enemies[i].Bounds))
+                var enemyBounds = enemyEntry.Value.Bounds;  
+                foreach (KeyValuePair<string, PictureBox> bulletEntry in bullets)
                 {
-                    Rip.controls.play();
-
-                    Score += 1;
-                    labelScore.Text = (Score < 10) ? "0" + Score.ToString() : Score.ToString();
-
-                    if (Score % 10 == 0)
+                    if (bulletEntry.Value.Bounds.IntersectsWith(enemyBounds))
                     {
-                        Level += 1;
-                        labelLevel.Text = (Level < 10) ? "0" + Level.ToString() : Level.ToString();
+                        Rip.controls.play();
+                        CalculateAndDrawScores();
 
-                        if (enemySpeed <= 3) enemySpeed += 2;
-                        if (Level == 4) GameOver("Epic Power");
+                        bulletsModel[bulletEntry.Key].Disactivation();
+                        enemiesModel[enemyEntry.Key].Mortification();
                     }
-
-                    enemies[i].Location = new Point((i + 1) * rnd.Next(150, 250) + 1280, rnd.Next(420, 600));
-                    bullets[0].Location = new Point(2000, mainPlayer.Location.Y + 50);
                 }
 
-                if (mainPlayer.Bounds.IntersectsWith(enemies[i].Bounds))
+                if (mainPlayer.Bounds.IntersectsWith(enemyBounds))
                 {
                     mainPlayer.Visible = false;
-                    GameOver("Game Over"); 
+                    GameOver("Game Over");
                 }
+            }
+        }
+
+        private void CalculateAndDrawScores()
+        {
+            Score += 1;
+            labelScore.Text = (Score < 10) ? "0" + Score.ToString() : Score.ToString();
+
+            if (Score % 10 == 0)
+            {
+                Level += 1;
+                labelLevel.Text = (Level < 10) ? "0" + Level.ToString() : Level.ToString();
+
+                if (enemySpeed <= 3) enemySpeed += 2;
+                if (Level == 4) GameOver("Epic Power");
             }
         }
 
@@ -275,6 +369,11 @@ namespace _2DWar
 
             GameSong.controls.stop();
             MoveEnemiesTimer.Stop();
+        }
+
+        private void mainPlayer_Click(object sender, EventArgs e)
+        {
+            // there's nothing here
         }
     }
 }
