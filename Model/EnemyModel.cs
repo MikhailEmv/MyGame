@@ -7,7 +7,7 @@ namespace _2DWar.Model
     {
 		public bool IsAlive { get; private set; }
 		private Random rnd;
-		private int enemySpeed;
+		public int enemySpeed = 3;
 		public Vector Position { get; private set; }
 		public string Id { get; private set; }
 		public int Height { get; private set; }
@@ -21,7 +21,6 @@ namespace _2DWar.Model
 			Position = position;
 			Height = height;
 			Width = width;
-			enemySpeed = 4;
 		}
 
 		public void Mortification()
@@ -31,7 +30,14 @@ namespace _2DWar.Model
 
 		private void ChangeSize()
 		{
-			var newSize = rnd.Next(60, 70);
+			var newSize = rnd.Next(80, 100);
+			Height = newSize;
+			Width = newSize;
+		}
+
+		public void ChangeSizeForNewEnemies()
+		{
+			var newSize = rnd.Next(100, 130);
 			Height = newSize;
 			Width = newSize;
 		}
@@ -41,9 +47,15 @@ namespace _2DWar.Model
 			var X = Position.X;
 			var Y = Position.Y;
 
-			if (direction == Directions.Left && IsAlive) X -= enemySpeed;
+			if (direction == Directions.Left && IsAlive)
+            {
+				X -= enemySpeed; 
+            }
 
-			if (X < 0) IsAlive = false;
+			if (X < 0) 
+			{
+				IsAlive = false;
+			} 
 
 			ChangeSize();
 

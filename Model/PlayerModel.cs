@@ -4,13 +4,14 @@ namespace _2DWar.Model
 {
 	public class PlayerModel
 	{ 
-		private int playerSpeed;
+		public int playerSpeed = 8;
+		public bool jumpFlag;
 		public Vector Position { get; private set; }
 
-		public PlayerModel(Vector position)
+		public PlayerModel(Vector position, bool jumpFlag)
 		{
 			Position = position;
-			playerSpeed = 4;
+			this.jumpFlag = jumpFlag;
 		}
 
 		public Vector Move(Directions direction)

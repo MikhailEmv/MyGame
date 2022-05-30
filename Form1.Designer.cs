@@ -42,6 +42,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.labelScore = new System.Windows.Forms.Label();
             this.labelLevel = new System.Windows.Forms.Label();
+            this.MoveGunSackTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.mainPlayer)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,10 +55,11 @@
             // mainPlayer
             // 
             this.mainPlayer.BackColor = System.Drawing.Color.Transparent;
-            this.mainPlayer.Image = global::_2DWar.Properties.Resources.cowboy_idble;
-            this.mainPlayer.Location = new System.Drawing.Point(12, 541);
+            this.mainPlayer.Image = global::_2DWar.Properties.Resources.Idle;
+            this.mainPlayer.Location = new System.Drawing.Point(12, 400);
             this.mainPlayer.Name = "mainPlayer";
-            this.mainPlayer.Size = new System.Drawing.Size(122, 120);
+            this.mainPlayer.Size = new System.Drawing.Size(106, 230);
+            this.mainPlayer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.mainPlayer.TabIndex = 0;
             this.mainPlayer.TabStop = false;
             this.mainPlayer.Click += new System.EventHandler(this.mainPlayer_Click);
@@ -155,11 +157,17 @@
             this.labelLevel.TabIndex = 5;
             this.labelLevel.Text = "01";
             // 
+            // MoveGunSackTimer
+            // 
+            this.MoveGunSackTimer.Enabled = true;
+            this.MoveGunSackTimer.Interval = 10;
+            this.MoveGunSackTimer.Tick += new System.EventHandler(this.MoveGunSackTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::_2DWar.Properties.Resources.background_jpeg;
+            this.BackgroundImage = global::_2DWar.Properties.Resources.aa08d2adbbedb0bae132a57c71b46d261;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1262, 673);
             this.Controls.Add(this.labelLevel);
@@ -195,5 +203,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label labelScore;
         private System.Windows.Forms.Label labelLevel;
+        private System.Windows.Forms.Timer MoveGunSackTimer;
     }
 }

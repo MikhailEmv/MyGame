@@ -125,5 +125,41 @@
       <Name>2DWar.Model</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1618500907_34-p-pikselnii-fon-dlya-igri-34.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\0jratMp.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aa08d2adbbedb0bae132a57c71b46d26.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aa08d2adbbedb0bae132a57c71b46d261.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\walk.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Idle_000.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Idle.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shoot.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Death.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Death_006.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Death1.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Jump.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

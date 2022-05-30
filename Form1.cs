@@ -24,29 +24,36 @@ namespace _2DWar
         Dictionary<string, EnemyModel> enemiesModel;
         Dictionary<string, PictureBox> enemies;
 
-        int enemySpeed;
+        PlayerModel playerModel;
 
-        int Score;
-        int Level;
+        Dictionary<string, GunSackModel> gunSacksModel;
+        Dictionary<string, PictureBox> gunSacks;
+
+        private int Score;
+        private int Level;
 
         WindowsMediaPlayer Shoot;
         WindowsMediaPlayer GameSong;
         WindowsMediaPlayer Rip;
+        WindowsMediaPlayer HeavyBreathing;
+        WindowsMediaPlayer DeathSound;
+        WindowsMediaPlayer WinSound;
 
-        Image easyEnemies = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\apap.gif");
-
-        PlayerModel player;
+        Image firstEnemy = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\apap.gif");
+        Image secondEnemy = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\4HVD1.gif");
+        Image thirdEnemy = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\BRyx.gif");
+        Image gunSackImage = Image.FromFile("C:\\Users\\Michael\\Desktop\\Для игры\\5IPp.gif");
 
         public Form1()
         {
-            player = new PlayerModel(position: new Vector(0, 600));
+            playerModel = new PlayerModel(position: new Vector(10, 570), false);
             InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             rnd = new Random();
-
+             
             clouds = new PictureBox[20];
             cloudsModel = new CloudModel[20];
 
@@ -56,36 +63,67 @@ namespace _2DWar
             enemies = new Dictionary<string, PictureBox>();
             enemiesModel = new Dictionary<string, EnemyModel>();
 
+            gunSacks = new Dictionary<string, PictureBox>();
+            gunSacksModel = new Dictionary<string, GunSackModel>();
+
             Score = 0;
             Level = 1;
 
             Shoot = new WindowsMediaPlayer();
             Shoot.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\shoot.mp3";
-            Shoot.settings.volume = 5;
+            Shoot.settings.volume = 4;
+            Shoot.controls.stop();
 
             Rip = new WindowsMediaPlayer();
             Rip.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\rip.mp3";
-            Rip.settings.volume = 25;
+            Rip.settings.volume = 18;
+            Rip.controls.stop();
 
             GameSong = new WindowsMediaPlayer();
             GameSong.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\GameSong.mp3";
             GameSong.settings.setMode("loop", true);
             GameSong.settings.volume = 15;
 
-            for (var i = 0; i < 4; i++) SpawnEnemy(easyEnemies);
+            HeavyBreathing = new WindowsMediaPlayer();
+            HeavyBreathing.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\hb.mp3";
+            HeavyBreathing.settings.volume = 25;
+            HeavyBreathing.controls.stop();
+
+            DeathSound = new WindowsMediaPlayer();
+            DeathSound.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\deathsound.mp3";
+            DeathSound.settings.volume = 15;
+            DeathSound.controls.stop();
+
+            WinSound = new WindowsMediaPlayer();
+            WinSound.URL = "C:\\Users\\Michael\\Desktop\\Для игры\\winsound.mp3";
+            WinSound.settings.volume = 8;
+            WinSound.controls.stop();
+
+            for (var i = 0; i < 3; i++) SpawnEnemy(firstEnemy, secondEnemy, thirdEnemy);
 
             SpawnClouds();
 
+            SpawnGunSack(gunSackImage);
+
             GameSong.controls.play();
 
-            UpdatePlayerPosition();
+            UpdatePlayerPosition(false);
         }
 
-        private void UpdatePlayerPosition()
+        private void UpdateGunSackPosition(string id)
         {
-            Vector playerPosition = player.Position;
+            var gunSackModel = gunSacksModel[id];
+            gunSacks[id].Left = (int)gunSackModel.Position.X;
+            gunSacks[id].Top = (int)gunSackModel.Position.Y;
+            gunSacks[id].Size = new Size(200, 200);
+        }
+
+        private void UpdatePlayerPosition(bool jumpFlag)
+        {
+            Vector playerPosition = playerModel.Position;
             mainPlayer.Left = (int)playerPosition.X;
             mainPlayer.Top = (int)playerPosition.Y;
+            playerModel.jumpFlag = jumpFlag;
         }
 
         private void UpdateCloud(int cloudIndex)
@@ -125,29 +163,80 @@ namespace _2DWar
             bulletsModel.Remove(id);
         }
 
-        private void SpawnEnemy(Image easyEnemies)
+        private void RemoveGunSack(string id)
+        {
+            this.Controls.Remove(gunSacks[id]);
+            gunSacks.Remove(id);
+            gunSacksModel.Remove(id);
+        }
+
+        private void MakeDifficultySetting(Image firstEnemy, Image secondEnemy,
+            Image thirdEnemy, EnemyModel enemyModel, PictureBox enemy)
+        {
+            if (Level > 0 && Level < 3)
+                enemy.Image = firstEnemy;
+            else
+            {
+                HeavyBreathing.controls.play();
+
+                if (Level >= 3 && Level < 5)
+                {
+                    enemy.Image = secondEnemy;
+                    enemyModel.enemySpeed++;
+                    // playerModel.playerSpeed--;
+                }
+
+                if (Level >= 5 && Level < 7)
+                {
+                    enemy.Image = thirdEnemy;
+                    enemyModel.enemySpeed += 2;
+                    // playerModel.playerSpeed--;
+                }
+            }
+        }
+
+        private void SpawnGunSack(Image gunSackImage)
+        {
+            var id = Guid.NewGuid().ToString();
+            var gunSackPosition = new Vector(700, 50);
+            var gunSackModel = new GunSackModel(id: id, position: gunSackPosition);
+            var gunSack = new PictureBox();
+            gunSack.SizeMode = PictureBoxSizeMode.Zoom;
+            gunSack.BackColor = Color.Transparent;
+            gunSack.Image = gunSackImage;
+
+            gunSacksModel[id] = gunSackModel;
+            gunSacks[id] = gunSack;
+
+            this.Controls.Add(gunSack);
+        }
+
+        private void SpawnEnemy(Image firstEnemy, Image secondEnemy, Image thirdEnemy)
         {
             var enemySize = rnd.Next(60, 90);
             var id = Guid.NewGuid().ToString();
-            var enemyPosition = new Vector(rnd.Next(90, 160) + 1080, rnd.Next(450, 600));
-            var enemyModel = new EnemyModel(id: id, position: enemyPosition, height: enemySize, width: enemySize);
+            var enemyPosition = new Vector(rnd.Next(30, 300) + 1080, rnd.Next(250, 650));
+            var enemyModel = new EnemyModel(id: id, position: enemyPosition,
+                height: enemySize, width: enemySize);
             var enemy = new PictureBox();
             enemy.SizeMode = PictureBoxSizeMode.Zoom;
             enemy.BackColor = Color.Transparent;
-            enemy.Image = easyEnemies;
+
+            MakeDifficultySetting(firstEnemy, secondEnemy, thirdEnemy, enemyModel, enemy);
 
             enemiesModel[id] = enemyModel;
             enemies[id] = enemy;
 
             this.Controls.Add(enemy);
         }
-       
-        private void SpawnBullet()
+
+        private void SpawnBullet(bool flag)
         {
             var id = Guid.NewGuid().ToString();
-            var bulletPosition = new Vector(mainPlayer.Location.X + 100 + 50,
-                                            mainPlayer.Location.Y + 50);
-            var bulletModel = new BulletModel(id: id, position: bulletPosition, limitRightSide: 1280);
+            var bulletPosition = new Vector(mainPlayer.Location.X + 200,
+                                            mainPlayer.Location.Y + 150);
+            var bulletModel = new BulletModel(id: id, position: bulletPosition, 
+                limitRightSide: 1280, flag: flag);
             var bullet = new PictureBox();
             bullet.BorderStyle = BorderStyle.None;
             bullet.Size = new Size(20, 5);
@@ -188,7 +277,7 @@ namespace _2DWar
                 {
                     height = rnd.Next(30, 70);
                     width = rnd.Next(100, 255);
-                    color = Color.FromArgb(rnd.Next(50, 125), 255, 200, 200);
+                    color = Color.FromArgb(rnd.Next(70, 125), 255, 150, 255);
                 }
 
                 else
@@ -198,8 +287,8 @@ namespace _2DWar
                     color = Color.FromArgb(rnd.Next(50, 125), 255, 205, 205);
                 }
 
-                var cloudPosition = new Vector(rnd.Next(-1000, 1280), rnd.Next(250, 360));
-                cloudsModel[i] = new CloudModel(position: cloudPosition, limitRightSide: 1280, 
+                var cloudPosition = new Vector(rnd.Next(-1000, 1280), rnd.Next(150, 250));
+                cloudsModel[i] = new CloudModel(position: cloudPosition, limitRightSide: 1280,
                     height: height, width: width);
                 clouds[i] = new PictureBox();
                 clouds[i].BorderStyle = BorderStyle.None;
@@ -229,8 +318,8 @@ namespace _2DWar
         {
             if (mainPlayer.Left > 10)
             {
-                player.Move(Directions.Left);
-                UpdatePlayerPosition();
+                playerModel.Move(Directions.Left);
+                UpdatePlayerPosition(false);
             }
         }
 
@@ -241,8 +330,8 @@ namespace _2DWar
         {
             if (mainPlayer.Left < 950)
             {
-                player.Move(Directions.Right);
-                UpdatePlayerPosition();
+                playerModel.Move(Directions.Right);
+                UpdatePlayerPosition(false);
             }
         }
 
@@ -251,10 +340,10 @@ namespace _2DWar
         /// </summary>
         private void UpMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Top > 480)
+            if (mainPlayer.Top > 400)
             {
-                player.Move(Directions.Up);
-                UpdatePlayerPosition();
+                playerModel.Move(Directions.Up);
+                UpdatePlayerPosition(false);
             }
         }
 
@@ -263,10 +352,10 @@ namespace _2DWar
         /// </summary>
         private void DownMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (mainPlayer.Top < 700)
+            if (mainPlayer.Top < 570)
             {
-                player.Move(Directions.Down);
-                UpdatePlayerPosition();
+                playerModel.Move(Directions.Down);
+                UpdatePlayerPosition(false);
             }
         }
 
@@ -275,15 +364,27 @@ namespace _2DWar
         /// </summary>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            mainPlayer.Image = Properties.Resources.cowboy_run;
+            mainPlayer.Image = Properties.Resources.walk;
             if (e.KeyCode == Keys.Left) LeftMoveTimer.Start();
             if (e.KeyCode == Keys.Right) RightMoveTimer.Start();
             if (e.KeyCode == Keys.Up) UpMoveTimer.Start();
             if (e.KeyCode == Keys.Down) DownMoveTimer.Start();
             if (e.KeyCode == Keys.Space)
             {
+                mainPlayer.Image = Properties.Resources.shoot;
                 Shoot.controls.play();
-                SpawnBullet();
+                SpawnBullet(false);
+            }
+            if (e.KeyCode == Keys.F)
+            {
+                mainPlayer.Image = Properties.Resources.shoot;
+                Shoot.controls.play();
+                SpawnBullet(true);
+            }
+            if (e.KeyCode == Keys.G)
+            {
+                mainPlayer.Image = Properties.Resources.Jump;
+                UpdatePlayerPosition(true);
             }
         }
 
@@ -292,7 +393,7 @@ namespace _2DWar
         /// </summary>
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            mainPlayer.Image = Properties.Resources.cowboy_idble;
+            mainPlayer.Image = Properties.Resources.Idle;
             LeftMoveTimer.Stop();
             RightMoveTimer.Stop();
             UpMoveTimer.Stop();
@@ -301,7 +402,7 @@ namespace _2DWar
 
         private void MoveEnemiesTimer_Tick(object sender, EventArgs e)
         {
-            var removeIds = new List<string>(); 
+            var removeIds = new List<string>();
             foreach (KeyValuePair<string, EnemyModel> entry in enemiesModel)
             {
                 if (entry.Value.IsAlive)
@@ -315,7 +416,7 @@ namespace _2DWar
             for (var i = 0; i < removeIds.Count; i++)
             {
                 RemoveEnemy(removeIds[i]);
-                SpawnEnemy(easyEnemies);
+                SpawnEnemy(firstEnemy, secondEnemy, thirdEnemy);
             }
 
             Intersect();
@@ -325,7 +426,7 @@ namespace _2DWar
         {
             foreach (KeyValuePair<string, PictureBox> enemyEntry in enemies)
             {
-                var enemyBounds = enemyEntry.Value.Bounds;  
+                var enemyBounds = enemyEntry.Value.Bounds;
                 foreach (KeyValuePair<string, PictureBox> bulletEntry in bullets)
                 {
                     if (bulletEntry.Value.Bounds.IntersectsWith(enemyBounds))
@@ -341,6 +442,7 @@ namespace _2DWar
                 if (mainPlayer.Bounds.IntersectsWith(enemyBounds))
                 {
                     mainPlayer.Visible = false;
+                    DeathSound.controls.play();
                     GameOver("Game Over");
                 }
             }
@@ -356,8 +458,14 @@ namespace _2DWar
                 Level += 1;
                 labelLevel.Text = (Level < 10) ? "0" + Level.ToString() : Level.ToString();
 
-                if (enemySpeed <= 3) enemySpeed += 2;
-                if (Level == 4) GameOver("Epic Power");
+                if (Level >= 4) HeavyBreathing.controls.play();
+
+                if (Level == 7) 
+                {
+                    HeavyBreathing.controls.stop();
+                    WinSound.controls.play();
+                    GameOver("You Won");
+                }
             }
         }
 
@@ -369,6 +477,28 @@ namespace _2DWar
 
             GameSong.controls.stop();
             MoveEnemiesTimer.Stop();
+        }
+
+        private void MoveGunSackTimer_Tick(object sender, EventArgs e)
+        {
+            var removeIds = new List<string>();
+            foreach (KeyValuePair<string, GunSackModel> entry in gunSacksModel)
+            {
+                if (entry.Value.IsAlreadyCought)
+                {
+                    entry.Value.Move(Directions.Down);
+                    UpdateGunSackPosition(entry.Key);
+                }
+                else removeIds.Add(entry.Key);
+            }
+
+            for (var i = 0; i < removeIds.Count; i++)
+            {
+                RemoveGunSack(removeIds[i]);
+                SpawnGunSack(gunSackImage);
+            }
+
+            Intersect();
         }
 
         private void mainPlayer_Click(object sender, EventArgs e)

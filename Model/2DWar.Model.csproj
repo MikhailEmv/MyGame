@@ -47,6 +47,7 @@
     <Compile Include="CloudModel.cs" />
     <Compile Include="Directions.cs" />
     <Compile Include="EnemyModel.cs" />
+    <Compile Include="GunSackModel.cs" />
     <Compile Include="PlayerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
