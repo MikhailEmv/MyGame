@@ -1,5 +1,5 @@
 # MyGame
-Repository for creating the game
+Repository of creating the game
 
 ## 18.04 - 03.05
 
